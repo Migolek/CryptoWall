@@ -1,37 +1,37 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
 import AppNavigator from './src/router';
+import * as Font from 'expo-font';
+import { View } from 'react-native';
+import FlexContainer from './src/components/FlexContainer';
+import Loader from './src/components/Loader';
 
-// export default function App() {
-//   async componentDidMount() {
-//     await Font.loadAsync({
-//       Roboto: require('native-base/Fonts/Roboto.ttf'),
-//       Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-//       ...Ionicons.font,
-//     });
-//     this.setState({ isReady: true });
-//   }
+class AppWrapper extends React.Component {
+  constructor(props) {
+    super(props);
 
-//   return (
-//     <AppNavigator />
-//   );
-// }
-
-
-export default class App extends React.Component {
+    this.state = {
+      fontLoaded: false,
+    };
+  }
 
   async componentDidMount() {
     await Font.loadAsync({
-      Roboto: require('native-base/Fonts/Roboto.ttf'),
-      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-      ...Ionicons.font,
+      Roboto: require('./node_modules/native-base/Fonts/Roboto.ttf'),
+      Roboto_medium: require('./node_modules/native-base/Fonts/Roboto_medium.ttf'),
     });
-    this.setState({ isReady: true });
+    this.setState({ fontLoaded: true });
   }
 
   render() {
-    return (
-      <AppNavigator />
-    );
+    const { fontLoaded } = this.state;
+
+    return fontLoaded ? <AppNavigator /> 
+    : <FlexContainer>
+        <Loader />
+      </FlexContainer>;
   }
 }
+
+export default function App() {
+  return (<AppWrapper />);
+};

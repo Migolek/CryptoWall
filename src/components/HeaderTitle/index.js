@@ -12,7 +12,7 @@ class HeaderTitle extends Component {
             </Button>
           </Left>
           <Body>
-            <Title>Header</Title>
+            <Title>Crypto Wall</Title>
           </Body>
           <Right>
             <Button transparent>
