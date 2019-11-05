@@ -1,9 +1,19 @@
 import React from 'react';
+import { View, StyleSheet, StatusBar } from 'react-native';
 import AppNavigator from './src/router';
 import * as Font from 'expo-font';
-import { View } from 'react-native';
 import FlexContainer from './src/components/FlexContainer';
 import Loader from './src/components/Loader';
+import Styles from './src/styles';
+
+const styles = StyleSheet.create({
+  appNavigator: {
+    backgroundColor: Styles.colors.midnight,
+    paddingTop: StatusBar.currentHeight,
+    height: '100%',
+    width: '100%',
+  },  
+});
 
 class AppWrapper extends React.Component {
   constructor(props) {
@@ -25,7 +35,10 @@ class AppWrapper extends React.Component {
   render() {
     const { fontLoaded } = this.state;
 
-    return fontLoaded ? <AppNavigator /> 
+    return fontLoaded 
+    ? <View style={styles.appNavigator}>
+        <AppNavigator />
+      </View> 
     : <FlexContainer>
         <Loader />
       </FlexContainer>;
