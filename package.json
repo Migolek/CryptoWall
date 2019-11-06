@@ -20,7 +20,8 @@
     "expo-font": "~7.0.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "^7.1.0"
+    "babel-preset-expo": "^7.1.0",
+    "prop-types": "^15.7.2"
   },
   "private": true
 }

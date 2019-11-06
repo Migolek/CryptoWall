@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, StatusBar } from 'react-native';
+import { View, StyleSheet, StatusBar, SafeAreaView  } from 'react-native';
+import { Container } from 'native-base';
 import AppNavigator from './src/router';
 import * as Font from 'expo-font';
-import FlexContainer from './src/components/FlexContainer';
 import Loader from './src/components/Loader';
 import Styles from './src/styles';
 
@@ -36,12 +36,10 @@ class AppWrapper extends React.Component {
     const { fontLoaded } = this.state;
 
     return fontLoaded 
-    ? <View style={styles.appNavigator}>
+    ? <SafeAreaView style={styles.appNavigator}>
         <AppNavigator />
-      </View> 
-    : <FlexContainer>
-        <Loader />
-      </FlexContainer>;
+      </SafeAreaView> 
+    : null;
   }
 }
 
