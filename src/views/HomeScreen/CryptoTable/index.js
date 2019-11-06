@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Text, View, ScrollView, StyleSheet, RefreshControl } from 'react-native';
 import { Container, Card, CardItem, Body } from 'native-base';
@@ -21,71 +21,26 @@ const styles = StyleSheet.create({
   }
 });
 
-class CryptoTable extends PureComponent {
+class CryptoTable extends Component {
   static propTypes = {
-    selectedSort: PropTypes.string,
-    types: PropTypes.object,
+    cryptoCurrencies: PropTypes.array,
+    isFetching: PropTypes.bool,
+    fetchData: PropTypes.func,
+    navigation: PropTypes.object,
   }
 
-  constructor() {
-    super();
-
-    this.state = {
-      cryptoCurrencies: [],
-      isFetching: false,
-    };
+  navigateToDetails = id => {
+    const { navigation } = this.props;
+    console.log('id')
+    navigation.navigate('DetailsScreen', { id: id })
   }
-
-  componentDidMount() {
-    this.fetchCryptoCurrency();
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if ((prevProps.types != this.props.types)) {
-      this.sortData();
-      console.log('log')
-    }
-  }
-  
-  sortData = () => {
-    const { selectedSort, types } = this.props;
-    const { cryptoCurrencies } = this.state;
-
-    switch (types[selectedSort]) {
-      case 'asc':
-        return selectedSort == 'name' 
-          ? this.setState({cryptoCurrencies: cryptoCurrencies.sort((a,b)=> a[selectedSort].toLowerCase() < b[selectedSort].toLowerCase()) })
-          : this.setState({cryptoCurrencies: cryptoCurrencies.sort((a,b)=> a[selectedSort] - b[selectedSort]) });
-      case 'desc' : 
-        return selectedSort == 'name' 
-        ? this.setState({cryptoCurrencies: cryptoCurrencies.sort((a,b)=> b[selectedSort].toLowerCase() > a[selectedSort].toLowerCase()) })
-        : this.setState({cryptoCurrencies: cryptoCurrencies.sort((a,b)=> b[selectedSort] - a[selectedSort]) });
-      default:
-        break;
-    }
-  }
-
-  fetchCryptoCurrency = async () => {
-    this.setState({ isFetching: true });
-    await fetch(`http://api.coincap.io/v2/assets`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'Accept-Language': 'ru,en;q=0.9',
-      },
-    })
-      .then(response => response.json())
-      .then(responseJson => this.setState({ cryptoCurrencies: responseJson.data, isFetching: false }));
-  } 
 
   renderTable = () => {
-    const { cryptoCurrencies } = this.state;
-    console.log('render')
+    const { cryptoCurrencies, navigation } = this.props;
     return cryptoCurrencies.map((e, idx) => {
       return (
         <Card key={idx}>
-          <CardItem style={styles.header}>
+          <CardItem button style={styles.header} onPress={() => this.navigateToDetails(e.id)}>
             <Body>
               <View style={styles.row}>
                 <Text style={[styles.column, {textAlign: 'left'}]}>{e.name}</Text>
@@ -98,17 +53,16 @@ class CryptoTable extends PureComponent {
       );
     })
   }
-  
 
   render() {
-    const { cryptoCurrencies, isFetching } = this.state;
+    const { cryptoCurrencies, isFetching, fetchData } = this.props;
 
     if(!cryptoCurrencies.length) return <Container><Loader /></Container>
 
     return (
       <ScrollView 
         style={styles.scrollView}
-        refreshControl={<RefreshControl refreshing={isFetching} onRefresh={this.fetchCryptoCurrency} />}>
+        refreshControl={<RefreshControl refreshing={isFetching} onRefresh={fetchData} />}>
         {this.renderTable()}
       </ScrollView>
     )

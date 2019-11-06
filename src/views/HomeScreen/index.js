@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button, StyleSheet, View, Text } from 'react-native';
-import { Container, Content, Card, CardItem, Body } from 'native-base';
+import { Button, StyleSheet, View, Text, TouchableHighlight  } from 'react-native';
+import { Container, Content, Card, CardItem, Body, Icon } from 'native-base';
 import HeaderTitle from '../../components/HeaderTitle';
 import FooterTabs from '../../components/FooterTabs';
 import CryptoTable from './CryptoTable';
@@ -18,55 +18,129 @@ const styles = StyleSheet.create({
   },
   firstColumn: {
     flex: 3,
+  },
+  viewWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  columnName: {
     textAlign: 'center',
     color: Styles.colors.pearl,
     fontSize: 16,
     fontWeight: 'bold',
-  }, 
+  },
+  chevron: {
+    color: Styles.colors.pearl,
+  }
 });
+
+const INITIAL_TYPES = {
+  name: '',
+  priceUsd: '',
+  changePercent24Hr: ''
+}
 
 class HomeScreen extends React.Component {
   constructor() {
     super();
 
     this.state = {
-      selectedSort: '',
+      cryptoCurrencies: [],
+      isFetching: false,
       types: {
-        name: 'asc',
-        priceUsd: 'asc',
-        changePercent24Hr: 'asc'
+        name: '',
+        priceUsd: '',
+        changePercent24Hr: ''
       }
     }
   }
 
-  sortTable = type => {
-    this.setState({
-      selectedSort: type,
-      types: {
-        ...this.state.types,
-        [type]: this.state.types[type] == 'asc' ? 'desc' : 'asc',
-      }
-    })
+  componentDidMount() {
+    this.fetchCryptoCurrency();
   }
 
+  sortTable = type => {
+    const { cryptoCurrencies, types } = this.state;
+    const sortedData = cryptoCurrencies.sort((a,b) => {
+      if (types[type] == ('asc' || '')) {
+        return type == 'name' 
+          ? b[type].toLowerCase() > a[type].toLowerCase()
+          : b[type] - a[type];
+      } else {
+        return type == 'name' 
+          ? b[type].toLowerCase() < a[type].toLowerCase()
+          : a[type] - b[type];
+      }
+    }); 
+
+    this.setState({ 
+      cryptoCurrencies: sortedData,
+      types: {
+        ...INITIAL_TYPES,
+        [type]: types[type] == 'asc' || '' ? 'desc' : 'asc',
+      } 
+    });
+  }
+
+  fetchCryptoCurrency = async () => {
+    this.setState({ isFetching: true });
+    await fetch(`http://api.coincap.io/v2/assets`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Accept-Language': 'ru,en;q=0.9',
+      },
+    })
+      .then(response => response.json())
+      .then(responseJson => this.setState({ cryptoCurrencies: responseJson.data, isFetching: false }));
+  } 
+
   render() {
-    const { selectedSort, types } = this.state;
+    const { cryptoCurrencies, isFetching, types } = this.state;
+    const { name, priceUsd, changePercent24Hr } = types;
+
     return (
       <Container style={styles.container}>
-        <HeaderTitle />
+        <HeaderTitle backBtn={false}/>
         <Card>
           <CardItem style={styles.tableHeader}>
             <Body>
               <View style={styles.firstRow}>
-                <Text style={[styles.firstColumn, {textAlign: 'left'}]} onPress={() => this.sortTable('name')}>Name</Text>
-                <Text style={styles.firstColumn} onPress={() => this.sortTable('priceUsd')}>Price</Text>
-                <Text style={styles.firstColumn} onPress={() => this.sortTable('changePercent24Hr')}>(24H)</Text>
+                <TouchableHighlight style={styles.firstColumn} onPress={() => this.sortTable('name')}>
+                  <View style={styles.viewWrapper}>
+                    <Text style={[styles.columnName, {textAlign: 'left'}]}>Name</Text>
+                    {!!name &&
+                    <Icon name={name == 'asc' ? 'chevron-up' : 'chevron-down'} type="EvilIcons" style={styles.chevron}/>
+                    }
+                  </View>
+                </TouchableHighlight>
+                <TouchableHighlight style={styles.firstColumn} onPress={() => this.sortTable('priceUsd')}>
+                  <View style={styles.viewWrapper}>
+                    <Text style={styles.columnName}>Price</Text>
+                    {!!priceUsd &&
+                    <Icon name={priceUsd == 'asc' ? 'chevron-up' : 'chevron-down'} type="EvilIcons" style={styles.chevron}/>
+                    }
+                  </View>
+                </TouchableHighlight>
+                <TouchableHighlight style={styles.firstColumn} onPress={() => this.sortTable('changePercent24Hr')}>
+                  <View style={styles.viewWrapper}>
+                    <Text style={styles.columnName}>(24H)</Text>
+                    {!!changePercent24Hr &&
+                    <Icon name={priceUsd == 'asc' ? 'chevron-up' : 'chevron-down'} type="EvilIcons" style={styles.chevron}/>
+                    }
+                  </View>
+                </TouchableHighlight>
               </View>
             </Body>
           </CardItem>
         </Card>
         <Content>
-          <CryptoTable selectedSort={selectedSort} types={types}/>
+          <CryptoTable 
+            cryptoCurrencies={cryptoCurrencies} 
+            isFetching={isFetching} 
+            fetchData={this.fetchCryptoCurrency} 
+            navigation={this.props.navigation}/>
         </Content>
         <FooterTabs />
       </Container>
