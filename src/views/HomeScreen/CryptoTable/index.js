@@ -6,14 +6,23 @@ import Loader from '../../../components/Loader';
 import Styles from '../../../styles';
 
 const styles = StyleSheet.create({
-  header: {
-    backgroundColor: Styles.colors.marengo,
+  headerLight: {
+    backgroundColor: Styles.colors.lightMarengo,
+  },
+  headerDark: {
+    backgroundColor: Styles.colors.marengo
   },
   row: {
     flexDirection: 'row',
 
   },
-  column: {
+  columnLight: {
+    flex: 3,
+    textAlign: 'center',
+    color: Styles.colors.midnight,
+    fontSize: 14,
+  },
+  columnDark: {
     flex: 3,
     textAlign: 'center',
     color: Styles.colors.pearl,
@@ -35,17 +44,19 @@ class CryptoTable extends Component {
     navigation.navigate('DetailsScreen', { id: id })
   }
 
+  checkColumStyle = idx => idx % 2 == 0 ? styles.columnDark : styles.columnLight;
+
   renderTable = () => {
     const { cryptoCurrencies, navigation } = this.props;
     return cryptoCurrencies.map((e, idx) => {
       return (
         <Card key={idx}>
-          <CardItem button style={styles.header} onPress={() => this.navigateToDetails(e.id)}>
+          <CardItem button style={idx % 2 == 0 ? styles.headerDark : styles.headerLight} onPress={() => this.navigateToDetails(e.id)}>
             <Body>
               <View style={styles.row}>
-                <Text style={[styles.column, {textAlign: 'left'}]}>{e.name}</Text>
-                <Text style={styles.column}>{parseFloat(e.priceUsd).toFixed(2)} USD</Text>
-                <Text style={styles.column}>{parseFloat(e.changePercent24Hr).toFixed(2)}%</Text>
+                <Text style={[this.checkColumStyle(idx), {textAlign: 'left'}]}>{e.name}</Text>
+                <Text style={this.checkColumStyle(idx)}>{parseFloat(e.priceUsd).toFixed(2)} USD</Text>
+                <Text style={this.checkColumStyle(idx)}>{parseFloat(e.changePercent24Hr).toFixed(2)}%</Text>
               </View>
             </Body>
           </CardItem>
@@ -60,7 +71,7 @@ class CryptoTable extends Component {
     if(!cryptoCurrencies.length) return <Container><Loader /></Container>
 
     return (
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         refreshControl={<RefreshControl refreshing={isFetching} onRefresh={fetchData} />}>
         {this.renderTable()}
