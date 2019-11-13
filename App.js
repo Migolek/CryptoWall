@@ -1,9 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, StatusBar, SafeAreaView  } from 'react-native';
-import { Container } from 'native-base';
+import { StyleSheet, StatusBar, SafeAreaView } from 'react-native';
 import AppNavigator from './src/router';
 import * as Font from 'expo-font';
-import Loader from './src/components/Loader';
 import Styles from './src/styles';
 
 const styles = StyleSheet.create({

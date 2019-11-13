@@ -4,11 +4,13 @@ import Styles from '../styles';
 
 import HomeScreen from '../views/HomeScreen';
 import CryptoCurrencyDetails from '../views/CryptoCurrencyDetails';
+import Author from '../views/Author';
 
 const MainNavigator = createStackNavigator(
   {
     HomeScreen: {screen: HomeScreen},
-    DetailsScreen: {screen: CryptoCurrencyDetails}
+    DetailsScreen: {screen: CryptoCurrencyDetails},
+    Author: {screen: Author},
   },
   {
     initialRouteName: 'HomeScreen',
