@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import PropTypes from 'prop-types';
-import { Header, Left, Body, Button, Icon, Title } from 'native-base';
+import { Header, Body, Button, Icon, Title } from 'native-base';
 import Styles from '../../styles';
 
 

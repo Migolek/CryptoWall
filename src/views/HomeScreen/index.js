@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, StyleSheet, View, Text, TouchableHighlight  } from 'react-native';
+import { StyleSheet, View, Text, TouchableHighlight  } from 'react-native';
 import { Container, Content, Card, CardItem, Body, Icon } from 'native-base';
 import HeaderTitle from '../../components/HeaderTitle';
 import FooterTabs from '../../components/FooterTabs';
