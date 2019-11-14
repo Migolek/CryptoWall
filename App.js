@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, StatusBar, SafeAreaView } from 'react-native';
 import AppNavigator from './src/router';
+import { database } from './src/database';
 import * as Font from 'expo-font';
 import Styles from './src/styles';
 
@@ -28,6 +29,8 @@ class AppWrapper extends React.Component {
       Roboto_medium: require('./node_modules/native-base/Fonts/Roboto_medium.ttf'),
     });
     this.setState({ fontLoaded: true });
+    
+    database.initDatabase();
   }
 
   render() {

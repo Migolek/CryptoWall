@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableHighlight  } from 'react-native';
 import { Container, Content, Card, CardItem, Body, Icon } from 'native-base';
 import HeaderTitle from '../../components/HeaderTitle';
 import FooterTabs from '../../components/FooterTabs';
+import { database } from '../../database';
 import CryptoTable from './CryptoTable';
 import Styles from '../../styles';
 
@@ -22,6 +23,7 @@ const styles = StyleSheet.create({
   viewWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-start'
   },
   columnName: {
     textAlign: 'center',
@@ -47,6 +49,7 @@ class HomeScreen extends React.Component {
     this.state = {
       cryptoCurrencies: [],
       isFetching: false,
+      test: [],
       types: {
         name: '',
         priceUsd: '',
@@ -55,8 +58,13 @@ class HomeScreen extends React.Component {
     }
   }
 
-  componentDidMount() {
-    this.fetchCryptoCurrency();
+  componentDidMount = async () => {
+    const currencies = await database.getAllCryptocurrencies();
+    if (currencies && !currencies.length) {
+      this.fetchCryptoCurrency();
+    } else {
+      this.setState({ cryptoCurrencies: currencies });
+    }
   }
 
   sortTable = type => {
@@ -93,7 +101,10 @@ class HomeScreen extends React.Component {
       },
     })
       .then(response => response.json())
-      .then(responseJson => this.setState({ cryptoCurrencies: responseJson.data, isFetching: false }));
+      .then(responseJson => {
+        database.saveCryptocurrencies(responseJson.data);
+        this.setState({ cryptoCurrencies: responseJson.data, isFetching: false });
+      });
   } 
 
   render() {
@@ -127,7 +138,7 @@ class HomeScreen extends React.Component {
                   <View style={styles.viewWrapper}>
                     <Text style={styles.columnName}>(24H)</Text>
                     {!!changePercent24Hr &&
-                    <Icon name={priceUsd == 'asc' ? 'chevron-up' : 'chevron-down'} type="EvilIcons" style={styles.chevron}/>
+                    <Icon name={changePercent24Hr == 'asc' ? 'chevron-up' : 'chevron-down'} type="EvilIcons" style={styles.chevron}/>
                     }
                   </View>
                 </TouchableHighlight>
@@ -135,13 +146,11 @@ class HomeScreen extends React.Component {
             </Body>
           </CardItem>
         </Card>
-        <Content>
-          <CryptoTable 
+        <CryptoTable 
             cryptoCurrencies={cryptoCurrencies} 
             isFetching={isFetching} 
             fetchData={this.fetchCryptoCurrency} 
             navigation={this.props.navigation}/>
-        </Content>
         <FooterTabs />
       </Container>
     );

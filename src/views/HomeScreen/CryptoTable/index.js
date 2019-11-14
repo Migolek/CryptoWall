@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Text, View, ScrollView, StyleSheet, RefreshControl } from 'react-native';
-import { Container, Card, CardItem, Body } from 'native-base';
+import { Container, Card, CardItem, Body, Icon } from 'native-base';
+import { database } from '../../../database';
 import Loader from '../../../components/Loader';
 import Styles from '../../../styles';
 
@@ -14,7 +15,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-
+    justifyContent: 'flex-start'
   },
   columnLight: {
     flex: 3,
@@ -27,8 +28,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: Styles.colors.pearl,
     fontSize: 14,
+  },
+  icon: {
+    color: Styles.colors.gold
   }
 });
+
 
 class CryptoTable extends Component {
   static propTypes = {
@@ -40,7 +45,6 @@ class CryptoTable extends Component {
 
   navigateToDetails = id => {
     const { navigation } = this.props;
-    console.log('id')
     navigation.navigate('DetailsScreen', { id: id })
   }
 
@@ -48,7 +52,7 @@ class CryptoTable extends Component {
 
   renderTable = () => {
     const { cryptoCurrencies, navigation } = this.props;
-    return cryptoCurrencies.map((e, idx) => {
+    return cryptoCurrencies && cryptoCurrencies.map((e, idx) => {
       return (
         <Card key={idx}>
           <CardItem button style={idx % 2 == 0 ? styles.headerDark : styles.headerLight} onPress={() => this.navigateToDetails(e.id)}>
@@ -57,6 +61,7 @@ class CryptoTable extends Component {
                 <Text style={[this.checkColumStyle(idx), {textAlign: 'left'}]}>{e.name}</Text>
                 <Text style={this.checkColumStyle(idx)}>{parseFloat(e.priceUsd).toFixed(2)} USD</Text>
                 <Text style={this.checkColumStyle(idx)}>{parseFloat(e.changePercent24Hr).toFixed(2)}%</Text>
+                <Icon style={styles.icon} name="star" onPress={e => database.addFavourite(e)}/>
               </View>
             </Body>
           </CardItem>
@@ -68,7 +73,7 @@ class CryptoTable extends Component {
   render() {
     const { cryptoCurrencies, isFetching, fetchData } = this.props;
 
-    if(!cryptoCurrencies.length) return <Container><Loader /></Container>
+    if(cryptoCurrencies && !cryptoCurrencies.length) return <Container><Loader /></Container>
 
     return (
       <ScrollView
