@@ -5,6 +5,7 @@ const Styles = {
     lightMarengo: '#8E96B5',
     pink: '#D37FCC',
     pearl: '#E3E6E9',
+    gold: '#e5b623'
   }
 };
 

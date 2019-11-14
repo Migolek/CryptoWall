@@ -21,7 +21,7 @@ class FooterTabs extends Component {
             <Icon name="list" />
             <Text>Home</Text>
           </Button>
-          <Button vertical onPress={() => navigation.navigate('HomeScreen')}>
+          <Button vertical onPress={() => navigation.navigate('Favourites')}>
             <Icon name="star" />
             <Text>Favourite</Text>
           </Button>
