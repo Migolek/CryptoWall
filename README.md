@@ -1,6 +1,6 @@
 # ![CryptoWall](./assets/icon.png)
 
-*Mobile app for review current state of cryptocurrencies*
+*Mobile app created in React Native for review current state of cryptocurrencies*
 
 ## Table of Contents
 - [!CryptoWall](#cryptowall)
