@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableHighlight  } from 'react-native';
 import { Container, Content, Card, CardItem, Body, Icon } from 'native-base';
+import { withNavigationFocus } from 'react-navigation';
 import HeaderTitle from '../../components/HeaderTitle';
 import FooterTabs from '../../components/FooterTabs';
 import { database } from '../../database';
@@ -48,6 +49,7 @@ class HomeScreen extends React.Component {
 
     this.state = {
       cryptoCurrencies: [],
+      favourites: [],
       isFetching: false,
       test: [],
       types: {
@@ -58,13 +60,29 @@ class HomeScreen extends React.Component {
     }
   }
 
-  componentDidMount = async () => {
+  componentDidMount () {
+    this.getCryptoCurrenciesData();
+    this.getFavouritesCurrencies();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.isFocused !== this.props.isFocused) {
+      this.getFavouritesCurrencies();
+    }
+  }
+
+  getCryptoCurrenciesData = async () => {
     const currencies = await database.getAllCryptocurrencies();
     if (currencies && !currencies.length) {
       this.fetchCryptoCurrency();
     } else {
       this.setState({ cryptoCurrencies: currencies });
     }
+  }
+
+  getFavouritesCurrencies = async () => {
+    const data = await database.getFavouritesCryptocurrencies();
+    this.setState({ favourites: data });
   }
 
   sortTable = type => {
@@ -108,7 +126,7 @@ class HomeScreen extends React.Component {
   } 
 
   render() {
-    const { cryptoCurrencies, isFetching, types } = this.state;
+    const { cryptoCurrencies, isFetching, types, favourites } = this.state;
     const { name, priceUsd, changePercent24Hr } = types;
 
     return (
@@ -148,13 +166,15 @@ class HomeScreen extends React.Component {
         </Card>
         <CryptoTable 
             cryptoCurrencies={cryptoCurrencies} 
+            favourites={favourites}
             isFetching={isFetching} 
             fetchData={this.fetchCryptoCurrency} 
-            navigation={this.props.navigation}/>
-        <FooterTabs />
+            navigation={this.props.navigation}
+            reloadData={this.getFavouritesCurrencies}/>
+        <FooterTabs refreshHomescreen={this.getFavouritesCurrencies} />
       </Container>
     );
   }
 }
 
-export default HomeScreen;
+export default withNavigationFocus(HomeScreen);

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Text, View, ScrollView, StyleSheet, RefreshControl } from 'react-native';
+import { Text, View, TouchableOpacity, ScrollView, StyleSheet, RefreshControl } from 'react-native';
 import { Container, Card, CardItem, Body, Icon } from 'native-base';
 import { database } from '../../../database';
 import Loader from '../../../components/Loader';
@@ -15,23 +15,37 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    position: 'relative',
   },
   columnLight: {
     flex: 3,
+    position: 'relative',
     textAlign: 'center',
     color: Styles.colors.midnight,
-    fontSize: 14,
+    fontSize: 16,
   },
   columnDark: {
     flex: 3,
+    position: 'relative',
     textAlign: 'center',
     color: Styles.colors.pearl,
-    fontSize: 14,
+    fontSize: 16,
+  },
+  iconWrapper: {
+    zIndex: 10,
+    position: 'relative',
+    flex: 1,
   },
   icon: {
-    color: Styles.colors.gold
-  }
+    color: Styles.colors.midnight,
+    fontSize: 28,
+  },
+  favouriteIcon: {
+    color: Styles.colors.gold,
+    fontSize: 28,
+  },
 });
 
 
@@ -48,10 +62,23 @@ class CryptoTable extends Component {
     navigation.navigate('DetailsScreen', { id: id })
   }
 
+  addToFavourite = (currency) => {
+    const { favourites } = this.props;
+    const isFavourite = favourites.map(e => e.id).includes(currency.id);
+    !isFavourite ? database.addFavourite(currency) : null;
+    this.props.reloadData();
+  }
+
   checkColumStyle = idx => idx % 2 == 0 ? styles.columnDark : styles.columnLight;
 
+  checkIsFavourite = id => {
+    const { favourites } = this.props;
+    const isFavourite = favourites.map(e => e.id).includes(id);
+    return isFavourite ? styles.favouriteIcon : styles.icon;
+  }
+
   renderTable = () => {
-    const { cryptoCurrencies, navigation } = this.props;
+    const { cryptoCurrencies } = this.props;
     return cryptoCurrencies && cryptoCurrencies.map((e, idx) => {
       return (
         <Card key={idx}>
@@ -61,7 +88,10 @@ class CryptoTable extends Component {
                 <Text style={[this.checkColumStyle(idx), {textAlign: 'left'}]}>{e.name}</Text>
                 <Text style={this.checkColumStyle(idx)}>{parseFloat(e.priceUsd).toFixed(2)} USD</Text>
                 <Text style={this.checkColumStyle(idx)}>{parseFloat(e.changePercent24Hr).toFixed(2)}%</Text>
-                <Icon style={styles.icon} name="star" onPress={e => database.addFavourite(e)}/>
+                <TouchableOpacity style={styles.iconWrapper} onPress={() => this.addToFavourite(e)}>
+                  <Icon style={this.checkIsFavourite(e.id)} name="star"/>
+                  {/* <Icon name="star"/> */}
+                </TouchableOpacity>
               </View>
             </Body>
           </CardItem>

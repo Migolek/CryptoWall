@@ -12,12 +12,14 @@ const styles = StyleSheet.create({
 
 class FooterTabs extends Component {
   render() {
-    const { navigation } = this.props;
+    const { navigation, refreshHomescreen } = this.props;
 
     return (
       <Footer>
         <FooterTab style={styles.footer}>
-          <Button vertical onPress={() => navigation.navigate('HomeScreen')}>
+          <Button vertical onPress={() => navigation.navigate('HomeScreen', {
+            refresh: () => refreshHomescreen()
+          })}>
             <Icon name="list" />
             <Text>Home</Text>
           </Button>

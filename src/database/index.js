@@ -1,7 +1,7 @@
 // import SQLite from "react-native-sqlite-storage";
 import * as SQLite from 'expo-sqlite';
 
-const database_name = "crypto.db";
+const database_name = "database.db";
 export const db = SQLite.openDatabase(database_name);
 
 export default class Database {
@@ -32,7 +32,7 @@ export default class Database {
       tx.executeSql(
         "select * from Favourites",
         null,
-        (_, { rows: { _array } }) => resolve(_array),
+        (trans, { rows: { _array } }) => resolve(_array),
         reject
       );
     }))
@@ -43,7 +43,7 @@ export default class Database {
       data.map(e => {
         tx.executeSql("insert or replace into Cryptocurrencies (id, name, priceUsd, changePercent24Hr) values (?, ?, ?, ?)",
           [e.id, e.name, e.priceUsd, e.changePercent24Hr],
-          () => console.log('success'),
+          () => console.log('success save'),
           () => console.log('error')
         );
       })
@@ -51,11 +51,20 @@ export default class Database {
   }
 
   addFavourite(currency) {
-    console.log(currency)
     db.transaction(tx => {
       tx.executeSql("insert or replace into Favourites (id, name, priceUsd, changePercent24Hr) values (?, ?, ?, ?)",
         [currency.id, currency.name, currency.priceUsd, currency.changePercent24Hr],
-        () => console.log('success'),
+        () => console.log('success add'),
+        () => console.log('error')
+      );
+    });
+  }
+
+  removeFavourite(currency) {
+    db.transaction(tx => {
+      tx.executeSql("delete from Favourites where id = (?)",
+        [currency.id],
+        () => console.log('success remove'),
         () => console.log('error')
       );
     });
