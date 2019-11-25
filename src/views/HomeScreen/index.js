@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableHighlight  } from 'react-native';
-import { Container, Content, Card, CardItem, Body, Icon } from 'native-base';
+import { Container, Card, CardItem, Body, Icon } from 'native-base';
 import { withNavigationFocus } from 'react-navigation';
 import HeaderTitle from '../../components/HeaderTitle';
 import FooterTabs from '../../components/FooterTabs';
@@ -89,22 +89,22 @@ class HomeScreen extends React.Component {
     const { cryptoCurrencies, types } = this.state;
     const sortedData = cryptoCurrencies.sort((a,b) => {
       if (types[type] == ('asc' || '')) {
-        return type == 'name' 
+        return type == 'name'
           ? b[type].toLowerCase() > a[type].toLowerCase()
           : b[type] - a[type];
       } else {
-        return type == 'name' 
+        return type == 'name'
           ? b[type].toLowerCase() < a[type].toLowerCase()
           : a[type] - b[type];
       }
-    }); 
+    });
 
-    this.setState({ 
+    this.setState({
       cryptoCurrencies: sortedData,
       types: {
         ...INITIAL_TYPES,
         [type]: types[type] == 'asc' || '' ? 'desc' : 'asc',
-      } 
+      }
     });
   }
 
@@ -122,8 +122,8 @@ class HomeScreen extends React.Component {
       .then(responseJson => {
         database.saveCryptocurrencies(responseJson.data);
         this.setState({ cryptoCurrencies: responseJson.data, isFetching: false });
-      });
-  } 
+      }).catch(error => console.log('Error fetching cryptocurrencies: ', error));
+  }
 
   render() {
     const { cryptoCurrencies, isFetching, types, favourites } = this.state;
@@ -164,11 +164,11 @@ class HomeScreen extends React.Component {
             </Body>
           </CardItem>
         </Card>
-        <CryptoTable 
-            cryptoCurrencies={cryptoCurrencies} 
+        <CryptoTable
+            cryptoCurrencies={cryptoCurrencies}
             favourites={favourites}
-            isFetching={isFetching} 
-            fetchData={this.fetchCryptoCurrency} 
+            isFetching={isFetching}
+            fetchData={this.fetchCryptoCurrency}
             navigation={this.props.navigation}
             reloadData={this.getFavouritesCurrencies}/>
         <FooterTabs refreshHomescreen={this.getFavouritesCurrencies} />

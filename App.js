@@ -11,12 +11,14 @@ const styles = StyleSheet.create({
     paddingTop: StatusBar.currentHeight,
     height: '100%',
     width: '100%',
-  },  
+  },
 });
 
 class AppWrapper extends React.Component {
   constructor(props) {
     super(props);
+
+    database.initDatabase();
 
     this.state = {
       fontLoaded: false,
@@ -29,17 +31,15 @@ class AppWrapper extends React.Component {
       Roboto_medium: require('./node_modules/native-base/Fonts/Roboto_medium.ttf'),
     });
     this.setState({ fontLoaded: true });
-    
-    database.initDatabase();
   }
 
   render() {
     const { fontLoaded } = this.state;
 
-    return fontLoaded 
+    return fontLoaded
     ? <SafeAreaView style={styles.appNavigator}>
         <AppNavigator />
-      </SafeAreaView> 
+      </SafeAreaView>
     : null;
   }
 }
